@@ -414,5 +414,5 @@ export const breedsAToK = [
   {
     code: 'KEX',
     name: 'Kerry Cross'
-  },
+  }
 ]

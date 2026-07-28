@@ -12,9 +12,18 @@
   },
   "devDependencies": {
     "@defra/lis-infra-eslint-config": "file:../../infra/eslint-config",
-    "eslint": "^9.0.0"
+    "eslint": "^9.0.0",
+    "husky": "9.1.7",
+    "prettier": "3.8.2"
   },
   "scripts": {
-    "lint": "eslint ."
+    "format": "prettier --write \"src/**/*.js\" \"**/*.{js,cjs,md,json,config.js,test.js}\"",
+    "format:check": "prettier --check \"src/**/*.js\" \"**/*.{js,cjs,md,json,config.js,test.js}\"",
+    "git:pre-commit-hook": "npm run security-audit && npm run format:check && npm run lint",
+    "lint": "npm run lint:js",
+    "lint:js": "eslint .",
+    "lint:js:fix": "eslint . --fix",
+    "security-audit": "npm audit --audit-level=critical",
+    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module"
   }
 }
