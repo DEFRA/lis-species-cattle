@@ -1,0 +1,35 @@
+name: "Publish npm package"
+
+on:
+  workflow_call:
+    inputs:
+      version:
+        required: true
+        type: string
+permissions:
+  contents: read
+  id-token: write
+
+jobs:
+  publish-npm:
+    name: "Publish npm package"
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
+    environment: release
+    steps:
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - name: Download npm package
+        uses: actions/download-artifact@v4
+        with:
+          name: npm-packages
+          path: artifacts
+
+      - name: Publish to npm
+        run: npm publish artifacts/*.tgz --access public --provenance

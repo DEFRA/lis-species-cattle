@@ -1,5 +1,5 @@
 {
-  "name": "@livestock/species-cattle",
+  "name": "@defra/lis-species-cattle",
   "version": "0.1.0",
   "description": "Cattle shared package for livestock taxonomy flows.",
   "type": "module",
