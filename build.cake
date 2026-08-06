@@ -1,5 +1,4 @@
 #nullable enable
-using System.Collections.Generic;
 #load "version.cake"
 
 var target = Argument("target", "Default");
@@ -7,78 +6,25 @@ var packOutputDir = Argument("output_dir", EnvironmentVariable("OUTPUT_DIR") ?? 
 var version = Argument("package_version", EnvironmentVariable("PACKAGE_VERSION") ?? "");
 var stagingDir = "./.cake/package";
 
-
-IReadOnlyList<string> GetCommandOutput(string fileName, string arguments)
+Action createPackage = () =>
 {
-    IEnumerable<string> output;
-    IEnumerable<string> error;
+    EnsureDirectoryExists(stagingDir);
+    EnsureDirectoryExists(packOutputDir);
 
-    var exitCode = StartProcess(
-        fileName,
-        new ProcessSettings
-        {
-            Arguments = arguments,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        },
-        out output,
-        out error);
-
-    var outputLines = output.ToList();
-    var errorLines = error.ToList();
-
-    if (exitCode != 0)
+    CopyFileToDirectory("./package.json", stagingDir);
+    CopyFileToDirectory("./package-lock.json", stagingDir);
+    if (FileExists("./README.md"))
     {
-        foreach (var line in errorLines)
-        {
-            Error(line);
-        }
-
-        throw new Exception($"{fileName} {arguments} failed with exit code {exitCode}.");
+        CopyFileToDirectory("./README.md", stagingDir);
     }
 
-    return outputLines;
-}
+    CopyDirectory("./src", $"{stagingDir}/src");
 
-void RunCommand(string fileName, string arguments)
-{
-    GetCommandOutput(fileName, arguments);
-}
-
-string NpmExecutable => IsRunningOnWindows() ? "npm.cmd" : "npm";
-
-void RunNpm(string arguments)
-{
-    Information($"> npm {arguments}");
-    RunCommand(NpmExecutable, $"--cache \"./.cake/npm-cache\" {arguments}");
-}
-
-void RunNode(string arguments)
-{
-    Information($"> node {arguments}");
-    RunCommand("node", arguments);
-}
-
-void RunNpx(string arguments)
-{
-    var executable = IsRunningOnWindows() ? "npx.cmd" : "npx";
-    Information($"> npx {arguments}");
-    RunCommand(executable, $"--cache \"./.cake/npm-cache\" {arguments}");
-}
-
-bool CommandSucceeds(string fileName, string arguments)
-{
-    var exitCode = StartProcess(
-        fileName,
-        new ProcessSettings
-        {
-            Arguments = arguments,
-            RedirectStandardOutput = true,
-            RedirectStandardError = true
-        });
-
-    return exitCode == 0;
-}
+    RunNpm(
+        $"version {version} --allow-same-version --no-git-tag-version " +
+        $"--ignore-scripts --prefix \"{stagingDir}\"");
+    RunNpm($"pack \"{stagingDir}\" --pack-destination \"{MakeAbsolute(Directory(packOutputDir))}\"");
+};
 
 Task("Clean")
     .Description("Removes generated Node package output")
@@ -109,7 +55,7 @@ Task("Install")
 Task("SecurityAudit")
     .IsDependentOn("Install")
     .Description("Audits dependencies")
-    .Does(() => RunNpm("audit --audit-level=critical"));
+    .Does(() => RunNpm("run security-audit"));
 
 Task("Format")
     .IsDependentOn("SecurityAudit")
@@ -123,8 +69,8 @@ Task("Lint")
 
 Task("Test")
     .IsDependentOn("Lint")
-    .Description("Runs Node's built-in test runner")
-    .Does(() => RunNode("--test"));
+    .Description("Runs the Vitest test suite")
+    .Does(() => RunNpm("test"));
 
 Task("Build")
     .IsDependentOn("Test")
@@ -139,30 +85,15 @@ Task("Build")
 
 Task("Pack")
     .IsDependentOn("Build")
-    .Description("Stages and creates a versioned npm package archive")
-    .Does(() =>
-    {
-        EnsureDirectoryExists(stagingDir);
-        EnsureDirectoryExists(packOutputDir);
+    .Description("Validates and creates a versioned npm package archive")
+    .Does(createPackage);
 
-        CopyFileToDirectory("./package.json", stagingDir);
-        CopyFileToDirectory("./package-lock.json", stagingDir);
-        if (FileExists("./README.md"))
-        {
-            CopyFileToDirectory("./README.md", stagingDir);
-        }
-
-        CopyDirectory("./src", $"{stagingDir}/src");
-
-        RunNpm(
-            $"version {version} --allow-same-version --no-git-tag-version " +
-            $"--ignore-scripts --prefix \"{stagingDir}\"");
-        RunNpm($"pack \"{stagingDir}\" --pack-destination \"{MakeAbsolute(Directory(packOutputDir))}\"");
-    });
+Task("PackOnly")
+    .IsDependentOn("Version")
+    .Description("Creates a versioned npm package archive from previously validated source")
+    .Does(createPackage);
 
 Task("Default")
     .IsDependentOn("Pack");
 
 RunTarget(target);
-
-

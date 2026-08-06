@@ -1,29 +1,52 @@
 {
   "name": "@defra/lis-species-cattle",
-  "version": "0.1.0",
+  "version": "0.0.1",
   "description": "Cattle shared package for livestock taxonomy flows.",
-  "type": "module",
   "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/DEFRA/lis-species-cattle.git"
+  },
   "exports": {
     ".": "./src/index.js"
   },
+  "files": [
+    "src"
+  ],
+  "type": "module",
   "engines": {
     "node": ">=24"
   },
-  "devDependencies": {
-    "@defra/lis-infra-eslint-config": "0.0.1",
-    "eslint": "^9.0.0",
-    "husky": "9.1.7",
-    "prettier": "3.8.2"
-  },
   "scripts": {
-    "format": "prettier --write \"src/**/*.js\" \"**/*.{js,cjs,md,json,config.js,test.js}\"",
-    "format:check": "prettier --check \"src/**/*.js\" \"**/*.{js,cjs,md,json,config.js,test.js}\"",
-    "git:pre-commit-hook": "npm run security-audit && npm run format:check && npm run lint",
-    "lint": "npm run lint:js",
-    "lint:js": "eslint .",
-    "lint:js:fix": "eslint . --fix",
-    "security-audit": "npm audit --audit-level=critical",
-    "setup:husky": "node -e \"try { (await import('husky')).default() } catch (e) { if (e.code !== 'ERR_MODULE_NOT_FOUND') throw e }\" --input-type module"
+    "format": "prettier --write \"src/**/*.js\" \"**/*.{js,cjs,md,json}\"",
+    "format:check": "prettier --check \"src/**/*.js\" \"**/*.{js,cjs,md,json}\"",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage --coverage.provider=istanbul --coverage.reporter=text --coverage.reporter=lcov --coverage.include=\"src/**/*.js\"",
+    "prepare": "if [ \"$npm_command\" = \"install\" ] && [ -z \"$CI\" ] && command -v husky >/dev/null 2>&1; then husky; fi",
+    "security-audit": "audit-ci",
+    "git:pre-commit-hook": "npm run security-audit && npm run format:check && npm run lint"
+  },
+  "author": "Defra DDTS",
+  "license": "OGL-UK-3.0",
+  "dependencies": {
+    "eslint-plugin-jsdoc": "^63.0.8",
+    "eslint-plugin-sonarjs": "^4.1.0",
+    "neostandard": "0.13.0",
+    "convict": "6.2.5",
+    "convict-format-with-validator": "6.2.0"
+  },
+  "peerDependencies": {
+    "eslint": "^9.0.0"
+  },
+  "devDependencies": {
+    "@defra/lis-infra-eslint-config": "^0.6.0",
+    "@vitest/coverage-istanbul": "^4.1.10",
+    "audit-ci": "^7.1.0",
+    "eslint": "^9.0.0",
+    "husky": "^9.1.7",
+    "prettier": "^3.9.6",
+    "vitest": "^4.1.10"
   }
 }
