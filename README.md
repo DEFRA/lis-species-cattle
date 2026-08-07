@@ -26,5 +26,5 @@ brew install act
 To run github action
 
 ```sh
-act -W .github/workflows/build.yml
+act -W .github/workflows/prerelease.yml
 ```

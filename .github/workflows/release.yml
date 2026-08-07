@@ -1,4 +1,5 @@
-name: 'Main Release'
+#file: noinspection UndefinedParamsPresent,UndefinedAction
+name: 'Release'
 
 on:
   pull_request:
@@ -16,7 +17,7 @@ jobs:
   get-version:
     name: 'Calculate Stable Version'
     if: github.event.pull_request.merged == true
-    uses: ./.github/workflows/version.yml
+    uses: ./.github/workflows/support-version.yml
     with:
       ref: ${{ github.event.pull_request.merge_commit_sha }}
       branch: ${{ github.event.pull_request.head.ref }}
@@ -25,7 +26,7 @@ jobs:
   validate:
     name: 'Validate Merged Commit'
     needs: get-version
-    uses: ./.github/workflows/validate.yml
+    uses: ./.github/workflows/support-validate.yml
     with:
       version: ${{ needs.get-version.outputs.version }}
       ref: ${{ github.event.pull_request.merge_commit_sha }}
@@ -33,17 +34,18 @@ jobs:
   sonar-analysis:
     name: 'Sonar Analysis'
     needs: [get-version, validate]
-    uses: ./.github/workflows/sonar.yml
+    uses: ./.github/workflows/support-sonar.yml
     with:
       version: ${{ needs.get-version.outputs.version }}
       ref: ${{ github.event.pull_request.merge_commit_sha }}
+      branch: main
     secrets: inherit
 
   create-tag:
     name: 'Tag Main'
     needs: [get-version, validate, sonar-analysis]
     if: needs.sonar-analysis.outputs.quality-gate-status == 'PASSED'
-    uses: ./.github/workflows/tag.yml
+    uses: ./.github/workflows/support-tag.yml
     with:
       version: ${{ needs.get-version.outputs.version }}
       ref: ${{ github.event.pull_request.merge_commit_sha }}
