@@ -1,3 +1,4 @@
+#file: noinspection UndefinedParamsPresent,UndefinedAction
 name: 'Pull Request Validation'
 
 on:
@@ -15,7 +16,7 @@ permissions:
 jobs:
   get-version:
     name: 'Calculate Prospective Version'
-    uses: ./.github/workflows/version.yml
+    uses: ./.github/workflows/support-version.yml
     with:
       ref: ${{ github.event.pull_request.head.sha }}
       branch: ${{ github.event.pull_request.head.ref }}
@@ -24,7 +25,7 @@ jobs:
   validate:
     name: 'Validate'
     needs: get-version
-    uses: ./.github/workflows/validate.yml
+    uses: ./.github/workflows/support-validate.yml
     with:
       version: ${{ needs.get-version.outputs.version }}
       ref: ${{ github.event.pull_request.head.sha }}
@@ -32,7 +33,7 @@ jobs:
   sonar-analysis:
     name: 'Sonar Analysis'
     needs: [get-version, validate]
-    uses: ./.github/workflows/sonar.yml
+    uses: ./.github/workflows/support-sonar.yml
     with:
       version: ${{ needs.get-version.outputs.version }}
       ref: ${{ github.event.pull_request.head.sha }}

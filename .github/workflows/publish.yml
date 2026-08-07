@@ -1,3 +1,4 @@
+#file: noinspection UndefinedParamsPresent,UndefinedAction
 name: 'Publish npm Package'
 
 on:
@@ -64,7 +65,7 @@ jobs:
   build-pack:
     name: 'Pack Tagged Source'
     needs: validate-release
-    uses: ./.github/workflows/build-pack.yml
+    uses: ./.github/workflows/support-build-pack.yml
     with:
       version: ${{ needs.validate-release.outputs.version }}
       ref: ${{ needs.validate-release.outputs.version }}
