@@ -30,8 +30,8 @@ export const breeds = {
   BWB: 'Belted Welsh Black',
   BWBX: 'Belted Welsh Black Cross',
   BI: 'Bison',
-  BA: "Blonde D'Aquitaine",
-  BAX: "Blonde D'Aquitaine Cross",
+  BA: 'Blonde D’Aquitaine',
+  BAX: 'Blonde D’Aquitaine Cross',
   BAL: 'Blue Albion',
   BALX: 'Blue Albion Cross',
   BLG: 'Blue Grey',
@@ -211,8 +211,12 @@ export const breeds = {
   ZE: 'Zebu'
 }
 
+// Names use typographic apostrophes for display, but people type straight
+// ones, so names are compared lower-cased with apostrophes made straight.
+const normaliseName = (name) => name.toLowerCase().replace(/[‘’]/g, "'")
+
 const breedsByName = Object.fromEntries(
-  Object.entries(breeds).map(([code, name]) => [name.toLowerCase(), code])
+  Object.entries(breeds).map(([code, name]) => [normaliseName(name), code])
 )
 
 /**
@@ -225,10 +229,10 @@ export const getBreedName = (breedCode) => {
 }
 
 /**
- * @param {string} breedName case-insensitive
+ * @param {string} breedName case-insensitive; straight and curly apostrophes match
  * @returns {string | undefined} the breed code, or undefined for an unknown name
  */
 export const getBreedCode = (breedName) => {
-  const key = breedName?.toLowerCase()
+  const key = breedName && normaliseName(breedName)
   return Object.hasOwn(breedsByName, key) ? breedsByName[key] : undefined
 }

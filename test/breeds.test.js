@@ -112,6 +112,28 @@ describe('breeds.js', () => {
     expect(result).toEqual('AAX')
   })
 
+  test('getBreedCode matches a straight apostrophe against a curly one', () => {
+    // Arrange
+    const name = "Blonde D'Aquitaine"
+
+    // Act
+    const result = getBreedCode(name)
+
+    // Assert
+    expect(result).toEqual('BA')
+  })
+
+  test('getBreedCode matches a curly apostrophe', () => {
+    // Arrange
+    const name = 'blonde d’aquitaine cross'
+
+    // Act
+    const result = getBreedCode(name)
+
+    // Assert
+    expect(result).toEqual('BAX')
+  })
+
   test('getBreedCode returns undefined for an unknown name', () => {
     // Arrange
     const name = 'Not a breed'
