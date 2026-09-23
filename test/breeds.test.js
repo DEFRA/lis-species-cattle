@@ -134,6 +134,30 @@ describe('breeds.js', () => {
     expect(result).toEqual('BAX')
   })
 
+  test('getBreedCode matches a name typed without its apostrophe', () => {
+    // Arrange
+    const name = 'Blonde DAquitaine'
+
+    // Act
+    const result = getBreedCode(name)
+
+    // Assert
+    expect(result).toEqual('BA')
+  })
+
+  test('breed names stay unique once apostrophes are ignored', () => {
+    // Arrange
+    const names = Object.values(breeds).map((name) =>
+      name.toLowerCase().replace(/['‘’]/g, '')
+    )
+
+    // Act
+    const uniqueNames = new Set(names)
+
+    // Assert
+    expect(uniqueNames.size).toBe(names.length)
+  })
+
   test('getBreedCode returns undefined for an unknown name', () => {
     // Arrange
     const name = 'Not a breed'

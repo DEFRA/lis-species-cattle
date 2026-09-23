@@ -211,9 +211,9 @@ export const breeds = {
   ZE: 'Zebu'
 }
 
-// Names use typographic apostrophes for display, but people type straight
-// ones, so names are compared lower-cased with apostrophes made straight.
-const normaliseName = (name) => name.toLowerCase().replace(/[‘’]/g, "'")
+// Names use typographic apostrophes for display, but people type straight ones
+// or leave them out, so names are compared lower-cased with apostrophes removed.
+const normaliseName = (name) => name.toLowerCase().replace(/['‘’]/g, '')
 
 const breedsByName = Object.fromEntries(
   Object.entries(breeds).map(([code, name]) => [normaliseName(name), code])
@@ -229,7 +229,7 @@ export const getBreedName = (breedCode) => {
 }
 
 /**
- * @param {string} breedName case-insensitive; straight and curly apostrophes match
+ * @param {string} breedName case-insensitive; apostrophes (straight, curly or none) are ignored
  * @returns {string | undefined} the breed code, or undefined for an unknown name
  */
 export const getBreedCode = (breedName) => {
