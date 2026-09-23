@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest'
 
-import { breeds } from '../src/breeds.js'
-import { comboBreeds, species } from '../src/index.js'
+import * as breedsModule from '../src/breeds.js'
+import * as index from '../src/index.js'
+
+const { species } = index
 
 describe('species', () => {
   it('exports the cattle metadata', () => {
@@ -13,14 +15,10 @@ describe('species', () => {
   })
 })
 
-describe('comboBreeds', () => {
-  it('starts with an empty option', () => {
-    expect(comboBreeds[0]).toEqual({ value: null, text: null })
-  })
-
-  it('maps every breed to a combo-box option', () => {
-    expect(comboBreeds.slice(1)).toEqual(
-      breeds.map(({ code, name }) => ({ value: code, text: name }))
-    )
+describe('breed exports', () => {
+  it('re-exports the breed lookups from breeds.js', () => {
+    expect(index.breeds).toBe(breedsModule.breeds)
+    expect(index.getBreedName).toBe(breedsModule.getBreedName)
+    expect(index.getBreedCode).toBe(breedsModule.getBreedCode)
   })
 })
