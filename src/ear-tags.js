@@ -102,7 +102,7 @@ export function earTagFormat(earTagNumber) {
 }
 
 /** The shapes in which a space only groups the characters. */
-const SPACES_IGNORED = [UK_NUMERIC, XI_NUMERIC, UK_ALPHANUMERIC]
+const SPACES_IGNORED = new Set([UK_NUMERIC, XI_NUMERIC, UK_ALPHANUMERIC])
 
 /**
  * @param {string} earTagNumber - as typed
@@ -110,7 +110,7 @@ const SPACES_IGNORED = [UK_NUMERIC, XI_NUMERIC, UK_ALPHANUMERIC]
  */
 function comparable(earTagNumber) {
   const spaced = earTagNumber.trim().toUpperCase().replaceAll(/\s+/g, ' ')
-  return SPACES_IGNORED.includes(earTagFormat(spaced) ?? '')
+  return SPACES_IGNORED.has(earTagFormat(spaced) ?? '')
     ? spaced.replaceAll(' ', '')
     : spaced
 }
