@@ -3,6 +3,7 @@ import { describe, expect, test } from 'vitest'
 import {
   COUNTRY_NUMERIC,
   GB_NUMERIC,
+  ISO_NUMERIC,
   NO_COUNTRY_CODE,
   UK_ALPHANUMERIC,
   UK_CHECK_LETTER,
@@ -72,17 +73,43 @@ describe('earTagFormat()', () => {
     expect(formats).toEqual([UK_CHECK_LETTER, UK_CHECK_LETTER])
   })
 
+  test("it reads a country's number and twelve digits as isoNumeric", () => {
+    // Arrange
+    const numbers = [
+      '372211234510091',
+      '372 2112345 10091',
+      '826 0 7654217 0000'
+    ]
+
+    // Act
+    const formats = numbers.map((number) => earTagFormat(number))
+
+    // Assert
+    expect(formats).toEqual(numbers.map(() => ISO_NUMERIC))
+  })
+
+  test('it reads no format where the country code is not a country', () => {
+    // Arrange
+    const values = ['OK 123456', '123012345678901', '999012345678901']
+
+    // Act
+    const formats = values.map((value) => earTagFormat(value))
+
+    // Assert
+    expect(formats).toEqual(values.map(() => undefined))
+  })
+
   test('it reads a country code and digits as countryNumeric', () => {
     // Arrange
     const numbers = [
       'AT12 3456 789',
       'CZ972 141069',
       'IE123456789012',
-      '372123456789012',
+      'DE 03 487 70062',
+      'PT 4 351 364',
       'FR12345 67890',
       'BE1234 5678',
-      'UK91234 56789',
-      'AB1234 567'
+      'UK91234 56789'
     ]
 
     // Act
@@ -94,13 +121,13 @@ describe('earTagFormat()', () => {
 
   test('it reads a herd mark and animal number alone as noCountryCode', () => {
     // Arrange
-    const numbers = ['Z4321 321', 'D123 123C']
+    const numbers = ['Z4321 321', 'D123 123C', 'AB1234 567']
 
     // Act
     const formats = numbers.map((number) => earTagFormat(number))
 
     // Assert
-    expect(formats).toEqual([NO_COUNTRY_CODE, NO_COUNTRY_CODE])
+    expect(formats).toEqual(numbers.map(() => NO_COUNTRY_CODE))
   })
 
   test('it reads no format in what is not an ear tag number', () => {
@@ -214,6 +241,18 @@ describe('isSameEarTag()', () => {
     // Arrange
     const one = 'GB 0 123456 12345'
     const other = 'gb012345612345'
+
+    // Act
+    const result = isSameEarTag(one, other)
+
+    // Assert
+    expect(result).toBe(true)
+  })
+
+  test('it reads a GB numeric number and the same digits after 826 as the same', () => {
+    // Arrange
+    const one = 'GB 0 7654217 0000'
+    const other = '826 0 7654217 0000'
 
     // Act
     const result = isSameEarTag(one, other)
