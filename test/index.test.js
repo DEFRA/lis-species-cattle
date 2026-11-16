@@ -1,7 +1,6 @@
 import { describe, expect, it } from 'vitest'
 
 import * as breedsModule from '../src/breeds.js'
-import * as countriesModule from '../src/countries.js'
 import * as earTagsModule from '../src/ear-tags.js'
 import * as index from '../src/index.js'
 
@@ -31,20 +30,11 @@ describe('ear tag exports', () => {
     expect(index.UK_NUMERIC).toBe(earTagsModule.UK_NUMERIC)
     expect(index.XI_NUMERIC).toBe(earTagsModule.XI_NUMERIC)
     expect(index.GB_NUMERIC).toBe(earTagsModule.GB_NUMERIC)
-    expect(index.ISO_NUMERIC).toBe(earTagsModule.ISO_NUMERIC)
     expect(index.UK_ALPHANUMERIC).toBe(earTagsModule.UK_ALPHANUMERIC)
     expect(index.UK_CHECK_LETTER).toBe(earTagsModule.UK_CHECK_LETTER)
     expect(index.COUNTRY_NUMERIC).toBe(earTagsModule.COUNTRY_NUMERIC)
     expect(index.NO_COUNTRY_CODE).toBe(earTagsModule.NO_COUNTRY_CODE)
     expect(index.earTagFormat).toBe(earTagsModule.earTagFormat)
     expect(index.isSameEarTag).toBe(earTagsModule.isSameEarTag)
-  })
-})
-
-describe('country exports', () => {
-  it('re-exports the country codes and lookups from countries.js', () => {
-    expect(index.countryNumbers).toBe(countriesModule.countryNumbers)
-    expect(index.getCountryNumber).toBe(countriesModule.getCountryNumber)
-    expect(index.getCountryLetters).toBe(countriesModule.getCountryLetters)
   })
 })

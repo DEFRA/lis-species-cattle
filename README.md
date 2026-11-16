@@ -81,16 +81,15 @@ getBreedCode("Blonde D'Aquitaine") // 'BA'
 Returns which shape an official cattle ear tag number is, or `undefined` when it is not one.
 The number is read as typed: any case, and any run of spaces as one.
 
-| Shape            | Constant          | Example           | Cattle                                                                                 |
-| ---------------- | ----------------- | ----------------- | -------------------------------------------------------------------------------------- |
-| `ukNumeric`      | `UK_NUMERIC`      | `UK123456789012`  | Born in Great Britain since July 2000                                                  |
-| `xiNumeric`      | `XI_NUMERIC`      | `XI012345678901`  | Born in Northern Ireland since June 2025                                               |
-| `gbNumeric`      | `GB_NUMERIC`      | `GB012345612345`  | Calves tagged under bovine electronic identification                                   |
-| `isoNumeric`     | `ISO_NUMERIC`     | `372211234510091` | A country's number and twelve digits, as an electronic tag holds it; Ireland prints it |
-| `ukAlphanumeric` | `UK_ALPHANUMERIC` | `UKAB1234 00001`  | Born April 1995 to 1999, and some from the Isle of Man                                 |
-| `ukCheckLetter`  | `UK_CHECK_LETTER` | `UK123456 78A`    | Older Northern Ireland tags                                                            |
-| `countryNumeric` | `COUNTRY_NUMERIC` | `FR12345 67890`   | Imported, and Northern Ireland's shorter numeric tags                                  |
-| `noCountryCode`  | `NO_COUNTRY_CODE` | `Z4321 321`       | Born before April 1995                                                                 |
+| Shape            | Constant          | Example          | Cattle                                                 |
+| ---------------- | ----------------- | ---------------- | ------------------------------------------------------ |
+| `ukNumeric`      | `UK_NUMERIC`      | `UK123456789012` | Born in Great Britain since July 2000                  |
+| `xiNumeric`      | `XI_NUMERIC`      | `XI012345678901` | Born in Northern Ireland since June 2025               |
+| `gbNumeric`      | `GB_NUMERIC`      | `GB012345612345` | Calves tagged under bovine electronic identification   |
+| `ukAlphanumeric` | `UK_ALPHANUMERIC` | `UKAB1234 00001` | Born April 1995 to 1999, and some from the Isle of Man |
+| `ukCheckLetter`  | `UK_CHECK_LETTER` | `UK123456 78A`   | Older Northern Ireland tags                            |
+| `countryNumeric` | `COUNTRY_NUMERIC` | `FR12345 67890`  | Imported, and Northern Ireland's shorter numeric tags  |
+| `noCountryCode`  | `NO_COUNTRY_CODE` | `Z4321 321`      | Born before April 1995                                 |
 
 `ANY_EAR_TAG_FORMAT` lists every shape. The check digit of a `ukNumeric` number is not checked; a `gbNumeric` number has none.
 
@@ -101,29 +100,10 @@ earTagFormat('uk 230011 200123') === UK_NUMERIC // true
 earTagFormat('Bob the bull') // undefined
 ```
 
-A country code has to be a country's: two letters or three digits of ISO 3166-1, or `UK` or `XI`.
-
-### `countryNumbers`
-
-The countries of ISO 3166-1, as an object keyed by two-letter code and holding each country's
-three-digit number. For example `countryNumbers.GB` is `'826'`.
-
-### `getCountryNumber(letters)` and `getCountryLetters(number)`
-
-Return a country's three-digit number for its two letters, in any case, and its two letters for
-its number. Each returns `undefined` for what is not a country.
-
-```js
-import { getCountryLetters, getCountryNumber } from '@defra/lis-species-cattle'
-
-getCountryNumber('ie') // '372'
-getCountryLetters('826') // 'GB'
-```
-
 ### `isSameEarTag(one, other)`
 
 Returns `true` when two ear tag numbers are the same number, however each is cased. Spaces are
-ignored in the `ukNumeric`, `xiNumeric`, `gbNumeric`, `isoNumeric` and `ukAlphanumeric` shapes, where they only group the
+ignored in the `ukNumeric`, `xiNumeric`, `gbNumeric` and `ukAlphanumeric` shapes, where they only group the
 characters. In the other shapes a space divides the herd mark from the animal number, so numbers
 that differ in where it falls are different animals.
 
@@ -132,7 +112,6 @@ import { isSameEarTag } from '@defra/lis-species-cattle'
 
 isSameEarTag('UK123456789012', 'uk 123456 789012') // true
 isSameEarTag('UK91234 56789', 'UK912345 6789') // false
-isSameEarTag('GB 0 7654217 0000', '826 0 7654217 0000') // true
 ```
 
 ## Prerequisites
