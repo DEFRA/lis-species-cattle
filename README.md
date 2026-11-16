@@ -76,6 +76,43 @@ getBreedCode('aberdeen angus') // 'AA'
 getBreedCode("Blonde D'Aquitaine") // 'BA'
 ```
 
+### `earTagFormat(earTagNumber)`
+
+Returns which shape an official cattle ear tag number is, or `undefined` when it is not one.
+The number is read as typed: any case, and any run of spaces as one.
+
+| Shape            | Constant          | Example          | Cattle                                                 |
+| ---------------- | ----------------- | ---------------- | ------------------------------------------------------ |
+| `ukNumeric`      | `UK_NUMERIC`      | `UK123456789012` | Born in Great Britain since July 2000                  |
+| `xiNumeric`      | `XI_NUMERIC`      | `XI012345678901` | Born in Northern Ireland since June 2025               |
+| `ukAlphanumeric` | `UK_ALPHANUMERIC` | `UKAB1234 00001` | Born April 1995 to 1999, and some from the Isle of Man |
+| `ukCheckLetter`  | `UK_CHECK_LETTER` | `UK123456 78A`   | Older Northern Ireland tags                            |
+| `countryNumeric` | `COUNTRY_NUMERIC` | `FR12345 67890`  | Imported, and Northern Ireland's shorter numeric tags  |
+| `noCountryCode`  | `NO_COUNTRY_CODE` | `Z4321 321`      | Born before April 1995                                 |
+
+`ANY_EAR_TAG_FORMAT` lists every shape. The check digit of a `ukNumeric` number is not checked.
+
+```js
+import { UK_NUMERIC, earTagFormat } from '@defra/lis-species-cattle'
+
+earTagFormat('uk 230011 200123') === UK_NUMERIC // true
+earTagFormat('Bob the bull') // undefined
+```
+
+### `isSameEarTag(one, other)`
+
+Returns `true` when two ear tag numbers are the same number, however each is cased. Spaces are
+ignored in the `ukNumeric`, `xiNumeric` and `ukAlphanumeric` shapes, where they only group the
+characters. In the other shapes a space divides the herd mark from the animal number, so numbers
+that differ in where it falls are different animals.
+
+```js
+import { isSameEarTag } from '@defra/lis-species-cattle'
+
+isSameEarTag('UK123456789012', 'uk 123456 789012') // true
+isSameEarTag('UK91234 56789', 'UK912345 6789') // false
+```
+
 ## Prerequisites
 
 - Node.js 24 (see `.nvmrc`, use `nvm use`)
