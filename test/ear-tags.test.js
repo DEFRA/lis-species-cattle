@@ -2,6 +2,7 @@ import { describe, expect, test } from 'vitest'
 
 import {
   COUNTRY_NUMERIC,
+  GB_NUMERIC,
   NO_COUNTRY_CODE,
   UK_ALPHANUMERIC,
   UK_CHECK_LETTER,
@@ -21,6 +22,21 @@ describe('earTagFormat()', () => {
 
     // Assert
     expect(formats).toEqual([UK_NUMERIC, UK_NUMERIC])
+  })
+
+  test('it reads GB and twelve digits as gbNumeric', () => {
+    // Arrange
+    const numbers = [
+      'GB012345612345',
+      'gb 0 123456 12345',
+      'GB 0 7 654217 0000'
+    ]
+
+    // Act
+    const results = numbers.map((number) => earTagFormat(number))
+
+    // Assert
+    expect(results).toEqual([GB_NUMERIC, GB_NUMERIC, GB_NUMERIC])
   })
 
   test('it reads XI and twelve digits as xiNumeric', () => {
@@ -186,6 +202,18 @@ describe('isSameEarTag()', () => {
     // Arrange
     const one = 'FR12345 67890'
     const other = ' fr12345   67890 '
+
+    // Act
+    const result = isSameEarTag(one, other)
+
+    // Assert
+    expect(result).toBe(true)
+  })
+
+  test('it ignores spaces in a GB numeric number', () => {
+    // Arrange
+    const one = 'GB 0 123456 12345'
+    const other = 'gb012345612345'
 
     // Act
     const result = isSameEarTag(one, other)

@@ -5,7 +5,7 @@
  * the number of the country they were born in.
  *
  * A number is read as typed, in any case, with any run of spaces as one. In
- * the numeric UK and XI shapes spaces only group the digits, so they are
+ * the numeric UK, XI and GB shapes spaces only group the digits, so they are
  * ignored. In every other shape a space divides the herd mark from the
  * animal number, and two animals can differ only in where it falls, so it
  * is kept.
@@ -15,6 +15,11 @@
 export const UK_NUMERIC = 'ukNumeric'
 /** XI and twelve digits: calves born in Northern Ireland since June 2025. */
 export const XI_NUMERIC = 'xiNumeric'
+/**
+ * GB and twelve digits, with no check digit: calves tagged under bovine
+ * electronic identification, which is to replace the UK shape for them.
+ */
+export const GB_NUMERIC = 'gbNumeric'
 /**
  * UK, a herd mark of letters then digits, and an animal number: cattle born
  * from April 1995 to 1999 (Barimo, to CTS), and some from the Isle of Man.
@@ -38,6 +43,7 @@ export const NO_COUNTRY_CODE = 'noCountryCode'
 export const ANY_EAR_TAG_FORMAT = Object.freeze([
   UK_NUMERIC,
   XI_NUMERIC,
+  GB_NUMERIC,
   UK_ALPHANUMERIC,
   UK_CHECK_LETTER,
   COUNTRY_NUMERIC,
@@ -49,6 +55,7 @@ const MAX_COUNTRY_DIGITS = 12
 
 const UK_NUMERIC_PATTERN = /^UK\d{12}$/
 const XI_NUMERIC_PATTERN = /^XI\d{12}$/
+const GB_NUMERIC_PATTERN = /^GB\d{12}$/
 const UK_ALPHANUMERIC_PATTERN = /^UK ?[A-Z]{1,2}\d{3,4} ?\d{5}$/
 const UK_CHECK_LETTER_PATTERN = /^UK ?\d{3,6} \d{1,4}[A-Z]$/
 const COUNTRY_NUMERIC_PATTERN = /^(?:[A-Z]{2}|372)[\d ]+$/
@@ -68,7 +75,7 @@ function isCountryNumeric(spaced) {
 }
 
 /**
- * Which shape an ear tag number is. The numeric UK and XI shapes are looked
+ * Which shape an ear tag number is. The numeric UK, XI and GB shapes are looked
  * for first, as the most exact. Two letters then digits is read as a
  * country code, so it is a country's number before it is one with no
  * country code.
@@ -86,6 +93,9 @@ export function earTagFormat(earTagNumber) {
   if (XI_NUMERIC_PATTERN.test(unspaced)) {
     return XI_NUMERIC
   }
+  if (GB_NUMERIC_PATTERN.test(unspaced)) {
+    return GB_NUMERIC
+  }
   if (UK_ALPHANUMERIC_PATTERN.test(spaced)) {
     return UK_ALPHANUMERIC
   }
@@ -102,7 +112,12 @@ export function earTagFormat(earTagNumber) {
 }
 
 /** The shapes in which a space only groups the characters. */
-const SPACES_IGNORED = new Set([UK_NUMERIC, XI_NUMERIC, UK_ALPHANUMERIC])
+const SPACES_IGNORED = new Set([
+  UK_NUMERIC,
+  XI_NUMERIC,
+  GB_NUMERIC,
+  UK_ALPHANUMERIC
+])
 
 /**
  * @param {string} earTagNumber - as typed
