@@ -119,22 +119,14 @@ Before releasing a change, also run the tests of each consuming repo against the
 
 ## Pipelines
 
-Build, versioning and publishing run in GitHub Actions (`.github/workflows`) using Cake scripts (`*.cake`):
+Build, versioning and publishing run in GitHub Actions (`.github/workflows`) using the shared
+composite actions in [lis-github-actions](https://github.com/DEFRA/lis-github-actions):
 
 - **Pull request to `main`**: validate (format, lint, test), Sonar analysis, version check
 - **Push to a `feature/` or `hotfix/` branch**: prerelease version and tag
 - **Merge to `main`**: release tag, then publish to [npm](https://www.npmjs.com/package/@defra/lis-species-cattle)
 
 Versions come from git tags (SemVer). After a merge, wait for the publish job to finish before bumping the package in consuming repos.
-
-### Running the build locally
-
-Cake is the build engine and orchestrates the Node package lifecycle. To run the default build
-(install, audit, format, lint, test and pack) locally:
-
-```bash
-dotnet cake ./build.cake --target=Default --package_version=0.1.0
-```
 
 ### Testing the GitHub Actions workflow locally
 
